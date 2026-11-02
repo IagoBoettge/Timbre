@@ -1,0 +1,24 @@
+test_abstracao_e_polimorfismo (test_timbre.TestTimbre.test_abstracao_e_polimorfismo) ... ok
+test_acentos_espacos_e_maiusculas (test_timbre.TestTimbre.test_acentos_espacos_e_maiusculas) ... ok
+test_arquivo_ausente_inicia_vazio_e_corrompido_e_preservado (test_timbre.TestTimbre.test_arquivo_ausente_inicia_vazio_e_corrompido_e_preservado) ... ok
+test_atualizacao_invalida_preserva_cadastro (test_timbre.TestTimbre.test_atualizacao_invalida_preserva_cadastro) ... ok
+test_atualizar_banda_reflete_na_busca (test_timbre.TestTimbre.test_atualizar_banda_reflete_na_busca) ... ok
+test_atualizar_musico_preserva_associacao (test_timbre.TestTimbre.test_atualizar_musico_preserva_associacao) ... ok
+test_criacao_invalida_nao_cadastra (test_timbre.TestTimbre.test_criacao_invalida_nao_cadastra) ... ok
+test_encerrar_e_reabrir (test_timbre.TestTimbre.test_encerrar_e_reabrir) ... ok
+test_excluir_banda_remove_vagas_sem_afetar_outras (test_timbre.TestTimbre.test_excluir_banda_remove_vagas_sem_afetar_outras) ... ok
+test_excluir_musico_remove_vinculos (test_timbre.TestTimbre.test_excluir_musico_remove_vinculos) ... ok
+test_excluir_vaga_atualiza_banda (test_timbre.TestTimbre.test_excluir_vaga_atualiza_banda) ... ok
+test_filtros_independentes (test_timbre.TestTimbre.test_filtros_independentes) ... ok
+test_instrumento_diferente (test_timbre.TestTimbre.test_instrumento_diferente) ... ok
+test_json_preserva_dados_estados_e_associacoes (test_timbre.TestTimbre.test_json_preserva_dados_estados_e_associacoes) ... ok
+test_multiplas_habilidades_e_duplicidade (test_timbre.TestTimbre.test_multiplas_habilidades_e_duplicidade) ... ok
+test_nao_reutiliza_id_apos_exclusao (test_timbre.TestTimbre.test_nao_reutiliza_id_apos_exclusao) ... ok
+test_nivel_insuficiente (test_timbre.TestTimbre.test_nivel_insuficiente) ... ok
+test_vaga_compativel_e_nivel_igual_ao_minimo (test_timbre.TestTimbre.test_vaga_compativel_e_nivel_igual_ao_minimo) ... ok
+test_validacao_de_niveis_e_idade (test_timbre.TestTimbre.test_validacao_de_niveis_e_idade) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.008s
+
+OK

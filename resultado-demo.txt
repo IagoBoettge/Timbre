@@ -1,0 +1,6 @@
+Músico: Alex | Porto Alegre | 20 anos
+Banda: Horizonte | Porto Alegre | rock
+Busca inicial: 1 vaga(s)
+Após encerrar: 0 vaga(s)
+Após reabrir: 1 vaga(s)
+JSON recuperado: 1 músico(s), 1 banda(s), 1 vaga(s)

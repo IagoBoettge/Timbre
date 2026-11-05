@@ -1,49 +1,102 @@
-# Timbre — Etapa 3: documentação e demonstração
+# Timbre — Documentação Completa (Etapas 1, 2 e 3)
 
-**Grupo 16**  
-**Integrantes:** Iago Boettge; Marcus Vinicius Rodrigues de Jesus; Samuel Almeida Giacomelli; Fernanda Silva Bettanin.  
-**Data:** 02/11/2026  
-**Demonstração prevista:** 05/11/2026
+**Grupo:** Grupo 16  
+**Integrantes:** Iago Boettge · Marcus Vinicius Rodrigues de Jesus · Samuel Almeida Giacomelli · Fernanda Silva Bettanin  
+**Repositório Remoto (GitHub):** [https://github.com/IagoBoettge/Timbre](https://github.com/IagoBoettge/Timbre)  
+**Data da Entrega e Demonstração:** 05/11/2026
 
-## 1. Proposta e materiais das etapas anteriores
+---
 
-O Timbre procura facilitar o encontro entre músicos e bandas locais. O músico registra seus dados, instrumentos, níveis de habilidade e gêneros de interesse. As bandas cadastram seus perfis e publicam vagas com instrumento, nível mínimo e requisitos. A busca apresenta oportunidades compatíveis com o músico e os filtros selecionados.
+## 1. Etapa 1 — Proposta do Projeto (Revisada e Atualizada)
 
-A proposta prevê cadastro e atualização de músicos e bandas, gerenciamento de vagas e filtros por cidade, instrumento e gênero musical. A base inicial acrescenta exclusão de registros e gravação em JSON local para permitir um fluxo completo de CRUD.
+### 1.1. Dados do Grupo e Ambiente de Desenvolvimento
+- **Integrantes:** Iago Boettge, Marcus Vinicius Rodrigues de Jesus, Samuel Almeida Giacomelli e Fernanda Silva Bettanin (**Grupo 16**).
+- **Ferramentas utilizadas:**
+  - **GitHub:** hospedagem do repositório remoto, versionamento e integração por Pull Requests ([https://github.com/IagoBoettge/Timbre](https://github.com/IagoBoettge/Timbre)).
+  - **Diagramas UML (draw.io / Mermaid):** modelagem de classes, dicionário de classes e especificação de entradas, saídas e persistência.
+  - **Python 3 (Biblioteca Padrão) + Tkinter (`tkinter.ttk`):** implementação das regras de negócio, interface gráfica em abas, persistência em JSON (`data/timbre.json`) e testes automatizados (`unittest`).
 
-- [Etapa 1 — proposta original completa](Etapa-1-Proposta.pdf), incluindo planejamento e responsabilidades.
-- [Etapa 2 — documento original completo](Etapa-2-UML.pdf).
+### 1.2. Proposta do Projeto e Problema Resolvido
+- **Problema a ser resolvido:** a dificuldade de encontrar integrantes compatíveis para bandas locais e, para o musicista, de localizar bandas próximas que precisem do seu instrumento no seu nível de experiência.
+- **Proposta revisada:** aplicação desktop em Python + Tkinter onde o músico cadastra seus dados (nome, cidade, idade, gêneros musicais de interesse e habilidades musicais com nível de 1 a 3) e bandas locais cadastram seu perfil, seus integrantes e vagas abertas (instrumento procurado, nível mínimo de 1 a 3 e requisitos). O sistema cruza automaticamente as habilidades do músico com as vagas abertas e permite filtrar oportunidades por cidade, instrumento e gênero musical.
 
-![Diagrama UML original da Etapa 2](Etapa-2-UML.png)
+### 1.3. Requisitos — Evolução da Definição das Classes
+Na Etapa 1 foram propostas 5 classes iniciais (`Musico`, `HabilidadeMusical`, `Busca`, `Vaga`, `Banda`). Na Etapa 2 foi introduzida a superclasse abstrata `Perfil` para aplicar herança e polimorfismo, e na Etapa 3 foram adicionadas as classes `Cadastro` (CRUD e persistência JSON) e `Aplicacao` (interface Tkinter):
 
-*Figura 1 — Modelagem original recebida do grupo.*
+| Classe | Origem | Responsabilidade Implementada |
+|---|---|---|
+| `Perfil` | Etapa 2 (UML) | Classe abstrata (`ABC`) com identificador (`_id`), `_nome`, `_cidade`, validação protegida (`_validarDados()`) e método abstrato `resumirPerfil()`. |
+| `Musico` | Etapa 1 / Etapa 2 | Herda de `Perfil`; armazena `__idade`, `__generos` e `__habilidades` (`HabilidadeMusical`). Sobrescreve `resumirPerfil()`. |
+| `Banda` | Etapa 1 / Etapa 2 | Herda de `Perfil`; armazena `__estilo`, `__integrantes` (`Musico`) e `__vagas` (`Vaga`). Sobrescreve `resumirPerfil()`. |
+| `HabilidadeMusical` | Etapa 1 / Etapa 2 | Registra o instrumento que o músico toca (ou vocal) e o nível de habilidade (`1` = iniciante, `2` = intermediário, `3` = avançado). |
+| `Vaga` | Etapa 1 / Etapa 2 | Representa uma oportunidade publicada por uma `Banda` com instrumento, nível mínimo (1 a 3), requisitos, estado (`__aberta`), método privado `__validarNivel()` e verificação `compativelCom(musico)`. |
+| `Busca` | Etapa 1 / Etapa 2 | Procura oportunidades abertas e compatíveis com o perfil do músico, aplicando filtros opcionais de cidade, instrumento e gênero musical. |
+| `Cadastro` | Etapa 3 (CRUD) | Gerencia dicionários em memória por ID (`musicos`, `bandas`, `vagas`), exclusões com integridade referencial e persistência atômica em `data/timbre.json`. |
+| `Aplicacao` | Etapa 3 (GUI) | Constrói as 5 abas Tkinter (`Músicos`, `Bandas`, `Vagas`, `Integrantes`, `Buscar oportunidades`), tabelas `Treeview` e rollback em memória (`deepcopy`). |
 
-## 2. Estado da implementação e repositório
+### 1.4. Entrada e Saída de Dados
+- **Entrada de dados:**
+  - Nome, idade e cidade do músico.
+  - Instrumentos que toca, nível de habilidade (1 a 3) e gêneros musicais de interesse.
+  - Nome da banda, cidade, estilo musical e associação de integrantes por ID.
+  - ID da banda, instrumento procurado, nível mínimo de experiência desejado e requisitos da vaga.
+  - ID do músico e filtros opcionais (cidade desejada, instrumento e gênero musical) para a busca.
+- **Saída de dados:**
+  - Listagem dos músicos cadastrados com resumo polimórfico e habilidades musicais.
+  - Listagem das bandas cadastradas com estilo musical e contagem/lista de integrantes.
+  - Listagem das vagas cadastradas indicando banda, instrumento, nível mínimo, estado (`Aberta`/`Encerrada`) e requisitos.
+  - Tabela de oportunidades compatíveis na aba de busca (banda, cidade, estilo, instrumento, nível e requisitos).
+  - Alertas de validação (`messagebox`) e barra de status indicando gravação local.
 
-**Repositório remoto da equipe:** [IagoBoettge/Timbre](https://github.com/IagoBoettge/Timbre).
+### 1.5. Principais Funcionalidades do Programa
+1. **Cadastro de músicos:** nome, cidade, idade, gêneros de interesse e múltiplas habilidades (`instrumento:nível`).
+2. **Cadastro de bandas:** nome, cidade e estilo musical principal.
+3. **Gerenciamento de integrantes:** adição e remoção de vínculos entre músicos e bandas.
+4. **Cadastro de vagas:** publicação de vagas por banda, instrumento, nível mínimo (1 a 3) e requisitos opcionais.
+5. **Busca de bandas compatíveis:** verificação automática de vaga aberta + instrumento correspondente + nível do músico >= nível mínimo da vaga.
+6. **Filtro por cidade:** filtragem insensível a maiúsculas/minúsculas, espaços extras e acentos.
+7. **Filtro por habilidade/instrumento:** restrição por instrumento procurado.
+8. **Filtro por gênero musical:** restrição pelo estilo musical da banda.
+9. **Visualização de oportunidades:** tabela detalhada com todas as vagas compatíveis.
+10. **Atualização e exclusão de cadastros (CRUD completo):** edição e remoção de músicos, bandas e vagas com integridade referencial.
+11. **Gerenciamento do estado da vaga:** encerramento e reabertura de vagas a qualquer momento.
+12. **Persistência automática:** salvamento e carregamento em `data/timbre.json`.
 
-Na consulta realizada nesta atividade, a branch `main` continha somente o README. A implementação descrita a seguir foi criada localmente a partir dos materiais recebidos e acompanha este pacote. Ela ainda não foi publicada no repositório remoto. Seus resultados de teste não se referem à versão atualmente publicada no GitHub.
+### 1.6. Cronograma e Divisão de Responsabilidades
 
-O pacote contém classes de domínio, CRUD com persistência local, interface Tkinter e demonstração pelo terminal. A lógica e a persistência foram testadas automaticamente; a interface foi importada sem erro, mas o uso visual e os fluxos interativos ainda não foram verificados.
+| Tarefa | Iago Boettge | Marcus Vinicius | Fernanda Silva | Samuel Almeida |
+|---|:---:|:---:|:---:|:---:|
+| Criação da UML e Dicionário de Classes | | X | | |
+| Criação de classes | X | | | |
+| Codificação | X | X | X | X |
+| Identidade visual e prints de telas | | | X | |
+| Implementação do Tkinter | | | | X |
+| Criação e gestão do GitHub | | | X | X |
+| Polimorfismo | | X | | |
+| Herança | | | | X |
+| Associação | X | | | |
+| Método privado | X | | | |
+| Atributo privado | | X | | |
+| Teste do programa | | | X | |
+| Elaborar os documentos das etapas do projeto | X | X | X | X |
 
-## 3. Classes do projeto e orientação a objetos
+---
 
-| Classe | Função implementada |
-|---|---|
-| `Perfil` | Classe abstrata com identificador, nome, cidade, validação e atualização dos dados comuns. Define `resumirPerfil()` como abstrato. |
-| `Musico` | Herda de `Perfil`; reúne idade, gêneros e habilidades. Atualiza preferências, adiciona habilidades e produz um resumo próprio. |
-| `Banda` | Herda de `Perfil`; reúne estilo, integrantes e vagas. Adiciona/remove integrantes, publica/remove vagas e produz um resumo próprio. |
-| `HabilidadeMusical` | Representa instrumento e nível de 1 a 3. Valida e atualiza o nível. |
-| `Vaga` | Mantém banda, instrumento, nível mínimo, requisitos e estado. Atualiza requisitos, encerra/reabre e verifica compatibilidade com um músico. |
-| `Busca` | Aplica os filtros escolhidos e retorna somente vagas abertas e compatíveis. |
-| `Cadastro` | Coordena cadastros por ID, exclusões, atualização de vínculos e leitura/gravação JSON. Foi adicionada à implementação. |
-| `Aplicacao` | Monta as abas Tkinter e liga as ações da interface às regras e aos cadastros. Foi adicionada à implementação. |
+## 2. Etapa 2 Completa e Diagramas UML (Original e Atualizado)
 
-**Herança:** `Musico` e `Banda` especializam `Perfil`. **Polimorfismo:** cada uma implementa `resumirPerfil()` de acordo com seus dados. **Associação:** bandas referenciam seus integrantes e vagas, e cada vaga referencia uma banda. **Encapsulamento:** atributos específicos das classes de domínio utilizam `__` e propriedades de leitura; `Perfil` utiliza atributos protegidos por convenção, com `_`. `Vaga.__validarNivel()` é um método privado e `Perfil._validarDados()` é protegido por convenção.
+### 2.1. Diagrama de Classes UML Original (Etapa 2 — Página 1)
+![Diagrama de Classes UML Original - Etapa 2](docs/img/etapa2_pagina1_uml.png)
 
-### Ajustes em relação ao UML original
+### 2.2. Dicionário das Classes (Etapa 2 — Página 2)
+![Dicionário das Classes - Etapa 2](docs/img/etapa2_pagina2_dicionario.png)
 
-Foram acrescentadas as classes `Cadastro` e `Aplicacao`, além de métodos de remoção necessários ao CRUD. As vagas recebem IDs no cadastro, embora o UML original não declare um atributo ID para `Vaga`. Métodos protegidos/privados usam a nomenclatura de Python: `_validarDados()` e `__validarNivel()`. As classes restantes preservam os nomes e as responsabilidades centrais da modelagem.
+### 2.3. Entradas, Saídas, Interação e Persistência Proposta (Etapa 2 — Página 3)
+![Entradas, Saídas e Interação - Etapa 2](docs/img/etapa2_pagina3_interacao.png)
+
+### 2.4. Diagrama de Classes UML Atualizado na Etapa 3 (Implementação Final)
+Foram acrescentadas as classes `Cadastro` (`dados.py`) e `Aplicacao` (`app.py`), além dos métodos `removerIntegrante()` e `removerVaga()` em `Banda` para viabilizar o CRUD completo. As vagas recebem IDs sequenciais em `Cadastro.vagas[id]`. Os métodos protegidos/privados seguem a convenção de Python: `Perfil._validarDados()` (`#`) e `Vaga.__validarNivel()` (`-`).
+
+![Diagrama de Classes UML Atualizado - Etapa 3](docs/img/etapa3_uml_atualizado.png)
 
 ```mermaid
 classDiagram
@@ -52,8 +105,8 @@ classDiagram
     Musico "1" --> "1..*" HabilidadeMusical : possui no cadastro
     Musico "0..*" -- "0..*" Banda : participa
     Banda "1" --> "0..*" Vaga : publica
-    Busca ..> Musico
-    Busca ..> Vaga
+    Busca ..> Musico : «use» perfil
+    Busca ..> Vaga : «use» oportunidades
     Cadastro --> Musico : gerencia
     Cadastro --> Banda : gerencia
     Cadastro --> Vaga : gerencia
@@ -61,128 +114,159 @@ classDiagram
     Aplicacao ..> Busca : consulta
 ```
 
-*Figura 2 — Relações da implementação inicial. O cadastro exige ao menos uma habilidade para cadastrar ou atualizar um músico.*
+---
 
-## 4. Bibliotecas e classes externas utilizadas
+## 3. Link para o Repositório Remoto e Execução
 
-Todas as dependências pertencem à biblioteca padrão do Python; não há pacotes de terceiros para instalar com `pip`. O ambiente precisa disponibilizar Tkinter/Tcl/Tk. A versão verificada foi Python 3.12.14 com Tk 8.6.
+- **Repositório GitHub do Projeto:** [https://github.com/IagoBoettge/Timbre](https://github.com/IagoBoettge/Timbre)
+- **Documentos completos gerados no projeto:**
+  - `Entrega-Final-Documentacao-Timbre-Grupo16.docx` e `Entrega-Final-Documentacao-Timbre-Grupo16.pdf` (documento consolidado com Etapas 1, 2 e 3, diagramas e anexos de telas).
+  - `TIMBRE.docx` (atualizado com toda a documentação e prints).
+  - `Diagrama UML - Grupo 16.docx` e `Etapa-2-UML.pdf` (modelagem completa da Etapa 2).
+  - `Etapa-1-Proposta.pdf` (documento original da Etapa 1).
 
-| Biblioteca / classes | Uso real |
-|---|---|
-| `tkinter`: `Tk`, `StringVar` | Janela principal e valores dos campos. |
-| `tkinter.ttk`: `Notebook`, `Frame`, `Label`, `Entry`, `Button`, `Treeview` | Abas, formulários, botões e tabelas da interface. |
-| `tkinter.messagebox` | Mensagens de erro e confirmação de exclusão. |
-| `abc`: `ABC`, `abstractmethod` | Definição da classe abstrata `Perfil`. |
-| `json` | Conversão dos cadastros entre objetos e arquivo JSON. |
-| `pathlib.Path` | Caminhos dos arquivos de dados e de testes. |
-| `os.replace` | Substituição do arquivo de dados após gravar um arquivo temporário. |
-| `unicodedata` | Comparação de filtros ignorando diferenças de acentos. |
-| `copy.deepcopy` | Cópia do cadastro antes de uma alteração pela interface; restauração em caso de falha de validação ou gravação. |
-| `unittest.TestCase` | Execução dos testes automatizados. |
-| `tempfile.TemporaryDirectory` | Dados isolados usados nos testes e na demonstração. |
+### Como Executar
+```bash
+# Interface gráfica Tkinter:
+python3 app.py
 
-As classes do domínio são próprias do projeto. GitHub é a plataforma de hospedagem; UML é a notação de modelagem.
+# Demonstração pelo terminal:
+python3 demo.py
 
-## 5. CRUD e persistência
-
-| Operação | Funcionamento implementado |
-|---|---|
-| **Criar** | Cadastro de músicos com habilidades, bandas e vagas; adição de integrantes às bandas. |
-| **Consultar** | Listagem dos cadastros e seus IDs; consulta de integrantes e busca de vagas compatíveis. |
-| **Atualizar** | Alteração de perfis, habilidades, estilo da banda e requisitos da vaga; encerramento e reabertura de vagas. |
-| **Excluir** | Exclusão de músicos, bandas e vagas; remoção de integrantes. |
-
-Excluir um músico remove suas associações com bandas. Excluir uma banda também exclui as vagas que pertencem a ela. Excluir uma vaga a remove da lista de oportunidades da banda. Encerrar uma vaga apenas altera seu estado e permite reabertura.
-
-A interface salva os dados após cada alteração em `data/timbre.json`. O carregamento reconstitui músicos, bandas, vagas e seus vínculos. Identificadores são sequenciais e não são reutilizados após exclusão. Não há banco SQL nem servidor remoto nesta versão.
-
-Campos obrigatórios não aceitam texto vazio. Idade deve ser um inteiro não negativo. Níveis devem ser inteiros de 1 a 3. Instrumentos repetidos no mesmo perfil são recusados, desconsiderando acentos, espaços nas extremidades e diferenças entre maiúsculas e minúsculas.
-
-## 6. Regras de busca
-
-A vaga precisa estar aberta e o músico deve possuir o instrumento solicitado em nível igual ou superior ao mínimo. Os filtros opcionais de cidade, instrumento e gênero são combinados: todos os filtros preenchidos devem ser atendidos.
-
-Filtros vazios não restringem a busca por aquele campo. As comparações ignoram acentos, diferenças de maiúsculas/minúsculas e espaços nas extremidades. Gênero é comparado ao estilo da banda quando o filtro é informado; os gêneros do perfil do músico não são aplicados automaticamente.
-
-## 7. Telas e capturas
-
-A interface está escrita em `app.py`. As capturas reais e a revisão visual permanecem pendentes.
-
-| Aba criada | O que representa |
-|---|---|
-| **Músicos** | Cadastro de nome, cidade, idade, gêneros e habilidades; listagem, seleção, atualização e exclusão. |
-| **Bandas** | Cadastro de nome, cidade e estilo; listagem e edição das bandas. |
-| **Vagas** | Cadastro por ID da banda, instrumento, nível mínimo e requisitos; atualização, exclusão, encerramento e reabertura. |
-| **Integrantes** | Adição e remoção de vínculos entre músicos e bandas pelos IDs. |
-| **Buscar oportunidades** | Busca pelo ID do músico e filtros opcionais; tabela com banda, cidade, estilo, instrumento, nível e requisitos. |
-
-## 8. Testes realizados
-
-Foram executados **19 testes automatizados, todos aprovados**, nas regras e na persistência desta base local. O registro está em [resultados-testes.txt](resultados-testes.txt). Esses testes não comprovam o funcionamento visual da interface.
-
-| Cenário | Resultado observado |
-|---|---|
-| Vaga aberta, instrumento igual e nível do músico igual ao mínimo | Retornada na busca. |
-| Nível insuficiente ou instrumento diferente | Vaga descartada. |
-| Encerrar e reabrir vaga | Deixa de ser compatível e volta a ser compatível. |
-| Filtros de cidade, instrumento e gênero incompatíveis | Vaga descartada em cada caso. |
-| Acentos, espaços nas extremidades e maiúsculas nos filtros | Comparação reconhece os valores equivalentes. |
-| Níveis inválidos, idade negativa e cadastros incompletos | Entradas recusadas. |
-| Atualização inválida | Cadastro anterior preservado. |
-| Múltiplas habilidades e instrumento duplicado | Compatibilidade considera cada habilidade; duplicata é recusada. |
-| Atualizar ou excluir músico integrante de banda | Vínculos atualizados ou removidos. |
-| Excluir banda ou vaga | Dependências removidas; outras bandas e músicos preservados. |
-| Atualizar cidade/estilo da banda | Busca usa os novos dados. |
-| Abstração e polimorfismo | `Perfil` não pode ser instanciado; músico e banda geram resumos distintos. |
-| Salvar e carregar JSON | Dados, estado da vaga, sequência de IDs e vínculos restaurados. |
-| Arquivo ausente ou JSON corrompido | Ausente inicia cadastro vazio; JSON inválido gera erro e permanece preservado. |
-| Exclusão seguida de novo cadastro | ID excluído não é reutilizado. |
-
-### Demonstração executada pelo terminal
-
-O arquivo `demo.py` cria o músico fictício Alex, a banda Horizonte e uma vaga de guitarra nível 2. A busca inicial retornou uma vaga; após encerrá-la retornou zero; após reabri-la retornou uma novamente. A leitura do JSON recuperou um músico, uma banda e uma vaga. O registro está em [resultado-demo.txt](resultado-demo.txt).
-
-### Reproduzir os resultados
-
-Na pasta principal do projeto:
-
-```text
-python -m unittest discover -s tests -v
-python demo.py
+# Suíte de 19 testes automatizados:
+python3 -m unittest discover -s . -p "test_*.py" -v
 ```
 
-Os testes e a demonstração usam arquivos temporários e não alteram o cadastro da interface.
+---
 
-## 9. Limitações e bugs conhecidos
+## 4. Explicação das Classes Externas e Bibliotecas Utilizadas
 
-Não restaram falhas reproduzidas nos cenários dos 19 testes aprovados. A ausência de falhas nessa cobertura não garante que toda a aplicação esteja livre de erros. A interface foi importada, mas ainda não foi exercitada visualmente.
+Todas as dependências pertencem à **Biblioteca Padrão do Python** (verificado em Python 3.12.14 com Tk 8.6), não exigindo instalação de pacotes externos via `pip`:
 
-Limitações desta versão:
+| Biblioteca / Módulo | Classes / Funções | Explicação de Uso no Projeto |
+|---|---|---|
+| `tkinter` | `Tk`, `StringVar` | Criação da janela principal desktop e variáveis reativas ligadas aos campos de entrada e à barra de status em `app.py`. |
+| `tkinter.ttk` | `Notebook`, `Frame`, `Label`, `Entry`, `Button`, `Treeview` | Construção das 5 abas (`Notebook`), painéis (`Frame`), rótulos, entradas de texto, botões de ação e tabelas interativas (`Treeview`). |
+| `tkinter.messagebox` | `showerror`, `askyesno` | Caixas de diálogo modais para exibir erros de validação e confirmar exclusão de registros. |
+| `abc` | `ABC`, `abstractmethod` | Definição da superclasse abstrata `Perfil` e do método abstrato `resumirPerfil()` em `modelo.py`. |
+| `unicodedata` | `normalize`, `category` | Normalização Unicode (`NFD`) na função `chave()` para comparar cidades, instrumentos e estilos ignorando acentos e caixa. |
+| `json` | `dumps`, `loads`, `JSONDecodeError` | Serialização e desserialização dos cadastros no arquivo `data/timbre.json` em `dados.py`. |
+| `pathlib` | `Path` | Manipulação multiplataforma de caminhos de arquivos e criação automática da pasta `data/`. |
+| `os` | `replace` | Substituição atômica do arquivo `data/timbre.json` a partir do arquivo temporário `data/timbre.json.tmp`. |
+| `copy` | `deepcopy` | Cópia profunda de segurança do objeto `Cadastro` antes de cada alteração na interface; permite rollback imediato em caso de erro. |
+| `unittest` | `TestCase`, `main` | Estruturação e execução dos 19 testes unitários automatizados em `test_timbre.py`. |
+| `tempfile` | `TemporaryDirectory` | Criação de diretórios temporários isolados para testar persistência em `test_timbre.py` e `demo.py` sem afetar os dados reais. |
 
-- Armazenamento local em JSON, sem sincronização entre computadores nem suporte a duas instâncias gravando simultaneamente.
-- Uso de IDs digitados para relacionar registros, o que exige consultar as listas antes de preencher alguns campos.
-- Instrumentos e estilos são textos livres. A normalização não reconhece sinônimos, abreviações nem cidades por proximidade geográfica.
-- Cada banda possui um estilo; o sistema ainda não representa uma lista de estilos por banda.
-- Requisitos adicionais da vaga são descritivos; a compatibilidade automática verifica instrumento, nível, estado e filtros escolhidos.
-- Os gêneros do músico ficam cadastrados, mas só restringem a busca quando o filtro de gênero é preenchido.
-- Para mudar a banda de uma vaga pela interface, é necessário excluir a vaga e criar outra.
-- A interface usa tabelas simples sem ajuste específico para telas pequenas e ainda requer revisão de usabilidade.
-- Não há instrução de instalação empacotada; a execução depende de Python e Tkinter disponíveis.
-- O carregamento verifica os dados esperados pelo programa; edições manuais arbitrárias do JSON não são um fluxo suportado.
+---
 
-## 10. O que falta fazer
+## 5. CRUD Usado e Persistência
 
-1. Revisar a implementação com os integrantes e integrar a base ao repositório da equipe.
-2. Abrir a interface no computador da apresentação, conferir criação, seleção, edição, exclusão, busca e reabertura dos dados após reiniciar.
-3. Incluir capturas reais e suas legendas na documentação.
-4. Conferir a necessidade das extensões do modelo e atualizar o diagrama detalhado se o grupo as adotar.
-5. Registrar problemas encontrados na revisão visual, com passos para reproduzi-los.
-6. Ensaiar a demonstração e explicar os conceitos de orientação a objetos e os resultados dos testes.
+O CRUD é implementado pela classe `Cadastro` (`dados.py`) com persistência automática em `data/timbre.json`:
 
-## 11. Demonstração em aula
+| Operação | Funcionalidades Implementadas |
+|---|---|
+| **Create (Criar)** | `criarMusico()`, `criarBanda()`, `criarVaga()` e `Banda.adicionarIntegrante()`. Atribui ID sequencial único (`proximo_id`) e valida todos os campos antes de inserir. |
+| **Read (Consultar)** | `Cadastro.carregar()`, listagem automática nas tabelas `Treeview` (`atualizarListas()`), autopreenchimento dos formulários ao clicar em uma linha (`preencher()`) e busca filtrada com `Busca.executar()`. |
+| **Update (Atualizar)** | `atualizarMusico()`, `atualizarBanda()`, `atualizarVaga()`, `Vaga.encerrar()` e `Vaga.reabrir()`. Preserva os vínculos do músico nas bandas ao ser atualizado e reflete alterações de banda imediatamente nas buscas. |
+| **Delete (Excluir)** | `excluirMusico()`, `excluirBanda()`, `excluirVaga()` e `Banda.removerIntegrante()`. Excluir um músico remove sua presença nas bandas; excluir uma banda remove em cascata todas as suas vagas. |
 
-Para uma demonstração já verificada, executar `python demo.py` e explicar as três situações da busca e a gravação/recuperação dos dados. Mostrar `modelo.py` para explicar herança, polimorfismo, associação e método privado.
+---
 
-Após revisar a interface, executar `python app.py` e reproduzir o fluxo: cadastrar músico, banda e vaga; buscar a oportunidade; encerrar a vaga; repetir a busca; reabri-la. Encerrar apresentando os testes, as limitações e as pendências.
+## 6. Prints de Telas do Projeto e Explicação de Cada Tela
 
-As instruções de execução e uso estão no [README principal](../README.md).
+### Anexo 1 — Tela 1: Aba "Músicos" (Visão Inicial)
+Apresenta o formulário de cadastro de músicos (Nome, Cidade, Idade, Gêneros separados por vírgula e Habilidades no formato `guitarra:2;bateria:1`), botões de CRUD, abas superiores (`Músicos`, `Bandas`, `Vagas`, `Integrantes` e `Buscar oportunidades`), tabela de registros e rodapé informativo.
+
+![Anexo 1 - Aba Músicos Inicial](docs/img/anexo1_tela_musicos_inicial.png)
+
+### Anexo 2 — Tela 1: Cadastro Bem-Sucedido na Aba "Músicos"
+Demonstra o cadastro concluído com sucesso (`fernanda bettanin`, `canoas rs`, `21` anos, gêneros `rock, pop, funk`, habilidade `guitarra: 2`), exibindo o ID `1`, o resumo polimórfico na tabela e a confirmação de salvamento no rodapé.
+
+![Anexo 2 - Cadastro de Músico](docs/img/anexo2_tela_musicos_cadastrado.png)
+
+### Anexo 3 — Tela 1: Validação de Erro ao Omitir Separador `:` na Habilidade
+Demonstra a mensagem de erro (`messagebox`) quando o usuário tenta informar a habilidade sem os dois-pontos (`guitarra 2`), orientando o formato correto `guitarra:2;bateria:1`.
+
+![Anexo 3 - Erro de Formato de Habilidade](docs/img/anexo3_erro_formato_habilidade.png)
+
+### Anexo 4 — Tela 1: Validação de Erro em Múltiplas Habilidades Fora do Padrão
+Demonstra o bloqueio de cadastro quando o usuário insere múltiplas habilidades separadas por `;` (`guitarra 2; bateria 2`), mas sem o separador `:` do nível de habilidade.
+
+![Anexo 4 - Erro em Múltiplas Habilidades](docs/img/anexo4_erro_multiplas_habilidades.png)
+
+### Anexo 5 — Tela 2: Aba "Bandas"
+Apresenta o formulário para cadastro, atualização e exclusão de bandas (Nome, Cidade e Estilo musical) e a tabela com ID, resumo polimórfico da banda e contagem de integrantes.
+
+![Anexo 5 - Aba Bandas](docs/img/anexo5_tela_bandas.png)
+
+### Anexo 6 — Tela 3: Aba "Vagas"
+Apresenta o formulário para publicação e manutenção de vagas abertas por uma banda (ID da banda, Instrumento, Nível mínimo de 1 a 3 e Requisitos opcionais), incluindo o botão **Encerrar / Reabrir**.
+
+![Anexo 6 - Aba Vagas](docs/img/anexo6_tela_vagas.png)
+
+### Anexo 7 — Tela 4: Aba "Integrantes"
+Apresenta os campos de ID da banda e ID do músico com os botões **Adicionar integrante** e **Remover integrante**, listando na tabela inferior as bandas e seus integrantes vinculados.
+
+![Anexo 7 - Aba Integrantes](docs/img/anexo7_tela_integrantes.png)
+
+### Anexo 8 — Tela 5: Aba "Buscar oportunidades"
+Apresenta o formulário de busca com ID do músico e filtros opcionais de Cidade, Instrumento e Gênero, botão **Buscar vagas compatíveis** e tabela de resultados (Banda, Cidade, Estilo, Instrumento, Nível e Requisitos).
+
+![Anexo 8 - Aba Buscar Oportunidades](docs/img/anexo8_tela_busca.png)
+
+---
+
+## 7. Exemplos de Testes
+
+Foram implementados e executados **19 testes unitários automatizados** em `test_timbre.py` (todos aprovados: `Ran 19 tests in 0.009s — OK`), além do script `demo.py` e dos testes de validação na interface (Anexos 2, 3 e 4):
+
+| Cenário Testado (`test_timbre.py`) | Resultado Observado |
+|---|---|
+| Vaga aberta, instrumento igual e nível do músico igual ao mínimo (`test_vaga_compativel_e_nivel_igual_ao_minimo`) | Retornada na busca (`OK`). |
+| Nível insuficiente (`test_nivel_insuficiente`) ou instrumento diferente (`test_instrumento_diferente`) | Vaga descartada (`OK`). |
+| Encerrar e reabrir vaga (`test_encerrar_e_reabrir`) | Deixa de ser compatível ao encerrar e volta a ser compatível ao reabrir (`OK`). |
+| Filtros independentes de cidade, instrumento e gênero (`test_filtros_independentes`) | Vaga descartada quando qualquer filtro preenchido não coincide (`OK`). |
+| Acentos, espaços extras e maiúsculas nos filtros (`test_acentos_espacos_e_maiusculas`) | Reconhece `"  SAO PAULO  "` como equivalente a `"São Paulo"` (`OK`). |
+| Níveis inválidos (`0`, `4`, `True`, `"2"`) e idade negativa (`test_validacao_de_niveis_e_idade`) | Entradas recusadas com `ValueError` (`OK`). |
+| Atualização inválida (`test_atualizacao_invalida_preserva_cadastro`) e criação inválida (`test_criacao_invalida_nao_cadastra`) | Estado anterior do cadastro preservado sem corrupção (`OK`). |
+| Múltiplas habilidades e instrumento duplicado (`test_multiplas_habilidades_e_duplicidade`) | Aceita múltiplos instrumentos e bloqueia duplicidade (`OK`). |
+| Atualizar ou excluir músico integrante de banda (`test_atualizar_musico_preserva_associacao`, `test_excluir_musico_remove_vinculos`) | Vínculos atualizados ou removidos automaticamente (`OK`). |
+| Excluir banda ou vaga (`test_excluir_banda_remove_vagas_sem_afetar_outras`, `test_excluir_vaga_atualiza_banda`) | Exclusão em cascata das vagas da banda sem afetar outras bandas (`OK`). |
+| Abstração e polimorfismo (`test_abstracao_e_polimorfismo`) | `Perfil` não pode ser instanciado (`TypeError`); `Musico` e `Banda` geram resumos distintos (`OK`). |
+| Salvar/carregar JSON e proteção contra JSON corrompido (`test_json_preserva_dados_estados_e_associacoes`, `test_arquivo_ausente_inicia_vazio_e_corrompido_e_preservado`) | Restaura objetos, vínculos, estado da vaga e `proximo_id`; preserva arquivo corrompido (`OK`). |
+| Não reutilização de IDs excluídos (`test_nao_reutiliza_id_apos_exclusao`) | Novo registro recebe ID estritamente superior ao excluído (`OK`). |
+
+---
+
+## 8. Limitações e Bugs Conhecidos
+
+- **Persistência local monousuário (JSON):** os dados são gravados localmente em `data/timbre.json`, sem sincronização em rede ou banco de dados concorrente.
+- **Relacionamento por IDs digitados:** para criar vagas, vincular integrantes ou buscar oportunidades, o usuário digita o ID numérico consultado nas abas correspondentes.
+- **Sintaxe textual para habilidades:** o campo de habilidades exige o padrão `instrumento:nível` separado por `;` (ex.: `guitarra:2;bateria:1`).
+- **Comparação textual sem sinônimos ou distância geográfica:** a normalização ignora acentos, espaços nas pontas e maiúsculas/minúsculas, mas textos estruturalmente diferentes (como `"Canoas"` vs `"Canoas RS"`) são tratados como cidades distintas.
+- **Estilo único por banda e filtro explícito de gênero:** cada banda cadastra um estilo principal; na busca, a restrição por gênero é aplicada quando o campo opcional `Gênero` é preenchido.
+- **Inalterabilidade da banda de uma vaga já criada:** para transferir uma vaga para outra banda pela interface, é necessário excluir a vaga e criar uma nova.
+
+---
+
+## 9. O que Falta Fazer (Evoluções Futuras)
+
+1. Substituir os campos de digitação manual de IDs por caixas de seleção (`ttk.Combobox`) exibindo `ID — Nome`.
+2. Substituir a entrada textual `guitarra:2;bateria:1` por controles dedicados de adição de instrumento e seletor de nível (`1`, `2` ou `3`).
+3. Permitir que a busca utilize opcionalmente a lista de gêneros cadastrada no perfil do músico como filtro automático e suporte múltiplos estilos por banda.
+4. Adicionar barras de rolagem (`ttk.Scrollbar`) nas tabelas `Treeview` e janela de detalhes ao selecionar uma oportunidade na busca.
+5. Empacotar o aplicativo em executável standalone (ex.: `PyInstaller`) e/ou migrar a persistência para `sqlite3`.
+
+---
+
+## 10. Roteiro para Demonstração na Aula de 05/11
+
+1. **Conceitos de POO no código (`modelo.py`):** mostrar a classe abstrata `Perfil` (`ABC` e `@abstractmethod resumirPerfil`), a herança em `Musico` e `Banda`, os atributos protegidos (`_`) e privados (`__`), o método protegido `_validarDados()` e o método privado `Vaga.__validarNivel()`.
+2. **Testes e demonstração no terminal:** executar `python3 -m unittest -v` (19 testes aprovados) e `python3 demo.py`.
+3. **Demonstração ao vivo na interface (`python3 app.py`):**
+   - Cadastrar um músico na aba **Músicos** (e demonstrar a validação de erro caso falte `:`);
+   - Cadastrar uma banda na aba **Bandas** e vinculá-los na aba **Integrantes**;
+   - Publicar uma vaga compatível na aba **Vagas**;
+   - Executar a busca na aba **Buscar oportunidades** e mostrar a vaga encontrada;
+   - Alternar o estado da vaga em **Encerrar / Reabrir** e repetir a busca;
+   - Fechar e reabrir o programa para demonstrar a persistência em `data/timbre.json`.
